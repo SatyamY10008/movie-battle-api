@@ -12,55 +12,54 @@ const {
     deleteMovie
 } = require("../controllers/movieController");
 
-// Middleware
+// Validation middleware
 const validateMovie = require("../middleware/movieValidation");
 const validateMoviePatch = require("../middleware/moviePatchValidation");
 
+// Authentication middleware
+const authenticateToken = require("../middleware/auth");
+
 
 // ========================================
-// GET ALL MOVIES
+// PUBLIC MOVIE ROUTES
 // ========================================
 
 router.get("/movies", getAllMovies);
-
-
-// ========================================
-// GET SINGLE MOVIE
-// ========================================
 
 router.get("/movies/:id", getMovieById);
 
 
 // ========================================
-// CREATE NEW MOVIE
+// PROTECTED MOVIE ROUTES
 // ========================================
 
-router.post("/movies", validateMovie, createMovie);
+// JWT required
+router.post(
+    "/movies",
+    authenticateToken,
+    validateMovie,
+    createMovie
+);
 
-
-// ========================================
-// UPDATE COMPLETE MOVIE
-// ========================================
-
-router.put("/movies/:id", validateMovie, updateMovie);
-
-
-// ========================================
-// UPDATE PARTIAL MOVIE
-// ========================================
+router.put(
+    "/movies/:id",
+    authenticateToken,
+    validateMovie,
+    updateMovie
+);
 
 router.patch(
     "/movies/:id",
+    authenticateToken,
     validateMoviePatch,
     patchMovie
 );
 
-
-// ========================================
-// DELETE MOVIE
-// ========================================
-
-router.delete("/movies/:id", deleteMovie);
+router.delete(
+    "/movies/:id",
+    authenticateToken,
+    deleteMovie
+);
 
 
 module.exports = router;

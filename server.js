@@ -8,6 +8,19 @@ const app = express();
 
 const PORT = process.env.PORT || 3000;
 
+
+// ========================================
+// MIDDLEWARE
+// ========================================
+
+app.use(express.json());
+app.use(helmet());
+
+
+// ========================================
+// RATE LIMITER
+// ========================================
+
 const apiLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
     max: 100,
@@ -17,13 +30,9 @@ const apiLimiter = rateLimit({
         message: "❌ Too many requests. Please try again later."
     }
 });
-// ========================================
-// MIDDLEWARE
-// ========================================
 
-app.use(express.json());
-app.use(helmet());
 app.use(apiLimiter);
+
 
 // ========================================
 // IMPORTS
@@ -31,6 +40,9 @@ app.use(apiLimiter);
 
 // Movie routes
 const movieRoutes = require("./routes/movieRoutes");
+
+// User routes
+const userRoutes = require("./routes/userRoutes");
 
 // MongoDB connection
 const { connectDB } = require("./db");
@@ -43,10 +55,12 @@ const errorHandler = require("./middleware/errorHandler");
 
 
 // ========================================
-// MOVIE ROUTES
+// MOVIE & USER ROUTES
 // ========================================
 
 app.use(movieRoutes);
+
+app.use(userRoutes);
 
 
 // ========================================
@@ -80,6 +94,7 @@ app.use(errorHandler);
 // ========================================
 
 async function startServer() {
+
     await connectDB();
 
     app.listen(PORT, () => {
