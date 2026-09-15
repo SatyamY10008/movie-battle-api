@@ -44,6 +44,12 @@ const movieRoutes = require("./routes/movieRoutes");
 // User routes
 const userRoutes = require("./routes/userRoutes");
 
+// Swagger
+const {
+    swaggerUi,
+    swaggerDocument
+} = require("./swagger");
+
 // MongoDB connection
 const { connectDB } = require("./db");
 
@@ -55,12 +61,25 @@ const errorHandler = require("./middleware/errorHandler");
 
 
 // ========================================
-// MOVIE & USER ROUTES
+// API ROUTES
 // ========================================
 
+// Movie routes
 app.use(movieRoutes);
 
+// User routes
 app.use(userRoutes);
+
+
+// ========================================
+// SWAGGER DOCUMENTATION
+// ========================================
+
+app.use(
+    "/api-docs",
+    swaggerUi.serve,
+    swaggerUi.setup(swaggerDocument)
+);
 
 
 // ========================================
@@ -68,10 +87,12 @@ app.use(userRoutes);
 // ========================================
 
 app.get("/", (req, res) => {
+
     res.json({
         success: true,
         message: "🎬 Welcome to Movie Battle API!"
     });
+
 });
 
 
@@ -98,9 +119,15 @@ async function startServer() {
     await connectDB();
 
     app.listen(PORT, () => {
+
         console.log(
             `🚀 Movie Battle API running on http://localhost:${PORT}`
         );
+
+        console.log(
+            `📚 Swagger Docs available at http://localhost:${PORT}/api-docs`
+        );
+
     });
 }
 
